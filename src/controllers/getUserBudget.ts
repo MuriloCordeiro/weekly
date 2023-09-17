@@ -18,7 +18,6 @@ export async function GetBudget(req: Request, res: Response) {
         .send("Orçamento não encontrado para o usuário especificado.");
     }
 
-    // Se tudo estiver bem, envie o orçamento mensal como resposta
     res.status(200).send(userBudget);
   } catch (error) {
     console.error("Erro ao obter o orçamento:", error);
