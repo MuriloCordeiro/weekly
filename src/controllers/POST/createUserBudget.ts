@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import MonthlyBudget from "../models/MonthlyBudget"; // Ajuste o caminho conforme necessário
+import MonthlyBudget from "../../models/MonthlyBudget"; // Ajuste o caminho conforme necessário
 
 function getWeeksInMonth(month: number, year: number): number {
   const firstDayOfMonth = new Date(year, month, 1).getDay();

@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import MonthlyBudget from "../models/MonthlyBudget"; // Ajuste o caminho conforme necessário
-import { CreateUserBudget } from "./createUserBudget";
+import MonthlyBudget from "../../models/MonthlyBudget"; // Ajuste o caminho conforme necessário
+import { CreateUserBudget } from "../POST/createUserBudget";
 export async function GetBudget(req: Request, res: Response) {
   const { userId } = req.query; // Supondo que o userId seja passado como um parâmetro de rota
 
