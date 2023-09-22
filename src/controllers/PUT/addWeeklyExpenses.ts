@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import MonthlyBudget from "../models/MonthlyBudget";
+import MonthlyBudget from "../../models/MonthlyBudget";
 
-export async function AddExpenses(req: Request, res: Response) {
+export async function AddWeeklyExpenses(req: Request, res: Response) {
   const { userId, weekNumber, expense } = req.body;
 
   if (!userId || !weekNumber || !expense) {

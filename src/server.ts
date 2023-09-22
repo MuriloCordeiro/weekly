@@ -10,7 +10,7 @@ const server = express();
 
 const port = 3333;
 const corsOptions = {
-  origin: ["http://localhost:3000"],
+  origin: ["http://localhost:3000", "https://weekly-frontend.vercel.app/"],
   credentials: true,
   optionSuccessStatus: 200,
 };
