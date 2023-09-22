@@ -20,8 +20,9 @@ const weekSchema = new mongoose.Schema({
 
 const monthlyBudgetSchema = new mongoose.Schema({
   userId: String,
+  currentMonth: String, // Novo campo
   totalBudget: Number,
-  remainingBudget: Number, // Novo campo
+  remainingBudget: Number,
   weeks: [weekSchema],
 });
 
@@ -34,38 +35,3 @@ const MonthlyBudget = mongoose.model(
 // const week = mongoose.model("Week", weekScheme, "weeks");
 
 export default MonthlyBudget;
-
-// {
-//   "_id": "6139c4c5f4f065001fbb10d7",  // ID gerado automaticamente pelo MongoDB
-//   "userId": "6123abc4567890123456defg", // Exemplo de ID de usuário
-//   "totalBudget": 4000, // Orçamento mensal do usuário
-//   "weeks": [
-//     {
-//       "weekNumber": 1,
-//       "startWeek": ''
-//       "endWeek": ''
-//       "budget": 1000, // Orçamento para a semana 1 (4000 / 4)
-//       "expenses": [
-//         {
-//           "description": "Alimentação",
-//           "amount": 200
-//         },
-//         {
-//           "description": "Transporte",
-//           "amount": 100
-//         }
-//       ]
-//     },
-//     {
-//       "weekNumber": 2,
-//       "budget": 1000, // Orçamento para a semana 2 (4000 / 4)
-//       "expenses": [
-//         {
-//           "description": "Aluguel",
-//           "amount": 500
-//         }
-//       ]
-//     },
-//     // ... semanas 3 e 4
-//   ]
-// }

@@ -15,37 +15,37 @@ export async function AddWeeklyExpenses(req: Request, res: Response) {
       return res
         .status(404)
         .send("Orçamento não encontrado para o usuário especificado.");
-    } else {
-      const week: any = userBudget.weeks.find(
-        (w: any) => w.weekNumber === weekNumber
-      );
-
-      if (!week) {
-        return res.status(404).send("Semana não encontrada.");
-      } else {
-        week.expenses.push(...expense);
-
-        const totalExpenseValue = expense.reduce(
-          (acc: any, curr: any) => acc + curr.value,
-          0
-        );
-        const diff = week.remainingBudget - totalExpenseValue;
-        week.remainingBudget = diff;
-
-        // Adicione o valor não utilizado ao remainingBudget das semanas subsequentes
-        const currentWeekIndex = userBudget.weeks.findIndex(
-          (w: any) => w.weekNumber === weekNumber
-        );
-        for (let i = currentWeekIndex + 1; i < userBudget.weeks.length; i++) {
-          userBudget.weeks[i].remainingBudget += diff;
-        }
-
-        userBudget.remainingBudget -= totalExpenseValue;
-
-        await userBudget.save();
-        res.status(200).send(userBudget);
-      }
     }
+
+    const week = userBudget.weeks.find((w: any) => w.weekNumber === weekNumber);
+
+    if (!week) {
+      return res.status(404).send("Semana não encontrada.");
+    }
+
+    week.expenses.push(...expense);
+
+    const totalExpenseValue = expense.reduce(
+      (acc: any, curr: any) => acc + curr.value,
+      0
+    );
+    week.remainingBudget -= totalExpenseValue;
+
+    const currentWeekIndex = userBudget.weeks.findIndex(
+      (w: any) => w.weekNumber === weekNumber
+    );
+
+    // Atualizar o remainingBudget para as semanas subsequentes
+    for (let i = currentWeekIndex + 1; i < userBudget.weeks.length; i++) {
+      userBudget.weeks[i].remainingBudget =
+        userBudget.weeks[i - 1].remainingBudget + week.budget;
+    }
+
+    userBudget.remainingBudget =
+      userBudget.weeks[userBudget.weeks.length - 1].remainingBudget;
+
+    await userBudget.save();
+    res.status(200).send(userBudget);
   } catch (error) {
     console.error("Erro ao adicionar despesas:", error);
     res.status(500).send("Erro interno do servidor");
