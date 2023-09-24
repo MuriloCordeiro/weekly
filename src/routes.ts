@@ -9,6 +9,7 @@ import { UpdateExpense } from "./controllers/POST/updateExpense";
 import { DeleteExpense } from "./controllers/POST/deleteExpense";
 import { UpdateWeeklyBudget } from "./controllers/POST/updateWeeklyUserBudget";
 import { UpdateWeeklyExpense } from "./controllers/POST/updateWeeklyExpense";
+import { DeleteWeeklyExpense } from "./controllers/DELETE/deleteWeeklyExpenseByID";
 
 const router = Router();
 //GET
@@ -25,5 +26,6 @@ router.post("/updateWeeklyBudget", UpdateWeeklyBudget);
 router.post("/updateWeeklyExpense", UpdateWeeklyExpense);
 //DELETE
 router.delete("/deleteExpense", DeleteExpense);
+router.delete("/deleteWeeklyExpense", DeleteWeeklyExpense);
 
 export default router;

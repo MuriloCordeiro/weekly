@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import MonthlyBudget from "../../models/MonthlyBudget"; // Ajuste o caminho conforme necessário
 
-export async function DeleteExpense(req: Request, res: Response) {
+export async function DeleteWeeklyExpense(req: Request, res: Response) {
   const { userId, weekNumber, expenseId } = req.body;
 
   if (!userId || !weekNumber || !expenseId) {
