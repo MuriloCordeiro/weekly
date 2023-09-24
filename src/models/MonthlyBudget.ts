@@ -4,7 +4,7 @@ import mongoose from "mongoose";
 //   semana: String,
 // });
 const expenseSchema = new mongoose.Schema({
-  title: String,
+  title: String, // novo campo
   description: String,
   value: Number,
   expenseDate: String,
