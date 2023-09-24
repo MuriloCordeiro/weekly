@@ -19,7 +19,9 @@ export async function DeleteWeeklyExpense(req: Request, res: Response) {
     }
 
     // Encontrar a semana específica
-    const week: any = userBudget.weeks.find((w) => w.weekNumber === weekNumber);
+    const week: any = userBudget.weeks.find(
+      (w: any) => w.weekNumber === parseInt(weekNumber as string, 10)
+    );
 
     if (!week) {
       return res.status(404).send("Semana não encontrada.");
@@ -27,9 +29,8 @@ export async function DeleteWeeklyExpense(req: Request, res: Response) {
 
     // Encontrar e remover a despesa
     const expenseIndex = week.expenses.findIndex(
-      (e: any) => e._id.toString() === expenseId
+      (e: any) => e._id.toString() === expenseId.toString()
     );
-
     if (expenseIndex === -1) {
       return res.status(404).send("Despesa não encontrada.");
     }
