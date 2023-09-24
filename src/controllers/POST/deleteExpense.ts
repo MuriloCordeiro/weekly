@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import Expenses from "../../models/Expenses";
 
 export async function DeleteExpense(req: Request, res: Response) {
-  const { userId, expenseId } = req.query;
+  const { userId, expenseId } = req.body;
 
   try {
     // Find the user's budget document by userId

@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import MonthlyBudget from "../../models/MonthlyBudget"; // Ajuste o caminho conforme necessário
 
 export async function DeleteWeeklyExpense(req: Request, res: Response) {
-  const { userId, weekNumber, expenseId } = req.body;
+  const { userId, weekNumber, expenseId } = req.query;
 
   if (!userId || !weekNumber || !expenseId) {
     return res.status(400).send("Todos os campos são obrigatórios.");
