@@ -23,15 +23,26 @@ export async function UpdateWeeklyBudget(req: Request, res: Response) {
     }
 
     // Armazenar o valor antigo do totalBudget antes da atualização
-    const oldTotalBudget: any = userBudget.totalBudget;
-    const oldRemainingBudget: any = userBudget.remainingBudget;
+    const oldTotalBudget = userBudget.totalBudget;
 
     // Atualizar o totalBudget
     userBudget.totalBudget = newBudget;
 
-    // Reajustar o remainingBudget com base no novo totalBudget
-    userBudget.remainingBudget =
-      (newBudget / oldTotalBudget) * oldRemainingBudget;
+    // Reajustar o remainingBudget global com base no novo totalBudget
+    userBudget.remainingBudget = newBudget;
+
+    // Reajustar o remainingBudget para cada semana
+    userBudget.weeks.forEach((week: any, index: number) => {
+      week.remainingBudget =
+        newBudget -
+        week.expenses.reduce(
+          (acc: number, expense: any) => acc + expense.value,
+          0
+        );
+      if (index > 0) {
+        week.remainingBudget += userBudget.weeks[index - 1].remainingBudget;
+      }
+    });
 
     // Salvar as alterações
     await userBudget.save();
