@@ -6,6 +6,7 @@ import { AddExpenses } from "./controllers/POST/addExpenses";
 import { CreateUserBudget } from "./controllers/POST/createUserBudget";
 import { CreateUserExpenseBudget } from "./controllers/POST/createUserExpenseBudget";
 import { UpdateExpense } from "./controllers/POST/updateExpense";
+import { DeleteExpense } from "./controllers/POST/deleteExpense";
 
 const router = Router();
 //GET
@@ -18,5 +19,7 @@ router.post("/createUserExpenseBudget", CreateUserExpenseBudget);
 router.post("/addWeeklyExpenses", AddWeeklyExpenses);
 router.post("/addExpenses", AddExpenses);
 router.post("/updateExpense", UpdateExpense);
+//DELETE
+router.delete("/deleteExpense", DeleteExpense);
 
 export default router;
