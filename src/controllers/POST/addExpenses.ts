@@ -31,9 +31,14 @@ export async function AddExpenses(req: Request, res: Response) {
       // IF IT EXISTS, CREATE A DATE INSTANCE TO ASSIGN TO THE startDate VARIABLE
       const startDate = new Date();
 
+      //VERIFY TYPE EXPENSE TO SET DEFAULT DATA
       if (type !== "fixed") {
         installments = 1;
         isCurrent = false;
+        userBudget.remainingBudget -= value;
+      } else {
+        userBudget.remainingBudget -= value * installments;
+        isCurrent = true;
       }
 
       // CREATE AN EXPENSES OBJECT TO ADD TO THE LIST IN THE COLLECTION

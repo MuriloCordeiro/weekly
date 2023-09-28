@@ -18,14 +18,16 @@ export async function UpdateWeeklyExpense(req: Request, res: Response) {
         .send("Orçamento não encontrado para o usuário especificado.");
     }
 
-    const week: any = userBudget.weeks.find((w) => w.weekNumber === weekNumber);
+    const week: any = userBudget.weeks.find(
+      (w: any) => w.weekNumber === weekNumber
+    );
 
     if (!week) {
       return res.status(404).send("Semana não encontrada.");
     }
 
     const expenseIndex = week.expenses.findIndex(
-      (e) => e._id.toString() === expenseId
+      (e: any) => e._id.toString() === expenseId
     );
 
     if (expenseIndex === -1) {
