@@ -10,10 +10,12 @@ import { DeleteExpense } from "./controllers/POST/deleteExpense";
 import { UpdateWeeklyBudget } from "./controllers/POST/updateWeeklyUserBudget";
 import { UpdateWeeklyExpense } from "./controllers/POST/updateWeeklyExpense";
 import { DeleteWeeklyExpense } from "./controllers/DELETE/deleteWeeklyExpenseByID";
+import { GetExpenses } from "./controllers/GET/getExpenses";
 
 const router = Router();
 //GET
 router.get("/getBudget", GetBudget);
+router.get("/getExpenses", GetExpenses);
 
 //POST
 router.post("/createUserBudget", CreateUserBudget);

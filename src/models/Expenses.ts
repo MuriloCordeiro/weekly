@@ -6,8 +6,8 @@ const listExpense = new mongoose.Schema({
   value: Number,
   installments: Number,
   isCurrent: Boolean, //true, false
-  createdAt: String, //data de criação
-  endDate: String, //criado automaticamente com base no installments
+  createdAt: Date, //data de criação
+  endDate: Date, //criado automaticamente com base no installments
   type: String,
 });
 
