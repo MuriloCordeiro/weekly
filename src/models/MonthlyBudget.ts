@@ -1,10 +1,7 @@
 import mongoose from "mongoose";
 
-// const weekScheme = new mongoose.Schema({
-//   semana: String,
-// });
 const expenseSchema = new mongoose.Schema({
-  title: String, // novo campo
+  title: String,
   description: String,
   value: Number,
   expenseDate: String,
@@ -12,27 +9,26 @@ const expenseSchema = new mongoose.Schema({
 
 const weekSchema = new mongoose.Schema({
   weekNumber: Number,
-  budget: Number,
-  remainingBudget: Number, // Novo campo
+  weekBudget: Number,
+  weekRemainingBudget: Number,
   startDate: String,
   endDate: String,
   expenses: [expenseSchema],
 });
 
-const monthlyBudgetSchema = new mongoose.Schema({
-  userId: String,
-  currentMonth: String, // Novo campo
+const budgetSchema = new mongoose.Schema({
   totalBudget: Number,
   remainingBudget: Number,
+  budgetId: String, // Gerado automaticamente pelo MongoDB se _id for usado
+  currentVigency: String,
   weeks: [weekSchema],
 });
 
-const MonthlyBudget = mongoose.model(
-  "MonthlyBudget",
-  monthlyBudgetSchema,
-  "weeks"
-);
+const userBudgetSchema = new mongoose.Schema({
+  userId: String,
+  budget: [budgetSchema],
+});
 
-// const week = mongoose.model("Week", weekScheme, "weeks");
+const UserBudget = mongoose.model("UserBudget", userBudgetSchema, "Budgets");
 
-export default MonthlyBudget;
+export default UserBudget;

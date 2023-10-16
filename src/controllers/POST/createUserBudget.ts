@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import MonthlyBudget from "../../models/MonthlyBudget"; // Ajuste o caminho conforme necessário
+import UserBudget from "../../models/MonthlyBudget"; // Atualize o caminho conforme necessário
 
 function getWeeksInMonth(month: number, year: number): number {
   const firstDayOfMonth = new Date(year, month, 1).getDay();
@@ -18,68 +18,76 @@ const formatDate = (date: Date): string => {
 export async function CreateUserBudget(req: Request, res: Response) {
   const { userId, totalBudget } = req.body;
 
-  // Validação do totalBudget
+  const currentDate = new Date();
+  const month = currentDate.getMonth();
+  const year = currentDate.getFullYear();
+  const currentVigency = formatDate(currentDate).split("/").slice(1).join("/");
+
   if (isNaN(totalBudget)) {
     return res
       .status(400)
       .send("O valor do orçamento total deve ser um número.");
   }
 
-  // Cálculo do número de semanas e datas
-  const currentDate = new Date();
-  const month = currentDate.getMonth();
-  const year = currentDate.getFullYear();
-  const numberOfWeeks = getWeeksInMonth(month, year); // Pega o número de semanas dinamicamente
-  const weeklyBudget = totalBudget / numberOfWeeks; // Dividir igualmente entre o número real de semanas
+  const numberOfWeeks = getWeeksInMonth(month, year);
+  const weeklyBudget = totalBudget / numberOfWeeks;
 
-  let weeks: {
-    weekNumber: number;
-    startDate: string;
-    endDate: string;
-    remainingBudget: number;
-    budget: number;
-    expenses: any[];
-  }[] = [];
-  let firstDate = new Date(year, month, 1);
-  let lastDate = new Date(year, month + 1, 0);
-  let numDays = lastDate.getDate();
+  let weeks: any = [];
   let start = 1;
-  let end = 7 - firstDate.getDay();
+  let end = 7 - new Date(year, month, 1).getDay();
   let weekNumber = 1;
-  let accumulatedBudget = 0;
+  let weekRemainingBudget = 0;
 
-  while (start <= numDays) {
-    const startDate = new Date(year, month, start);
-    const endDate = new Date(year, month, end);
-    const formattedStartDate = formatDate(startDate);
-    const formattedEndDate = formatDate(endDate);
-    accumulatedBudget += weeklyBudget;
+  while (start <= new Date(year, month + 1, 0).getDate()) {
+    weekRemainingBudget += weeklyBudget;
+    const startDate = formatDate(new Date(year, month, start));
+    const endDate = formatDate(new Date(year, month, end));
+
     weeks.push({
       weekNumber,
-      startDate: formattedStartDate,
-      endDate: formattedEndDate,
-      budget: weeklyBudget,
-      remainingBudget: accumulatedBudget, // Novo campo
+      weekBudget: weeklyBudget,
+      weekRemainingBudget,
+      startDate,
+      endDate,
       expenses: [],
     });
 
     start = end + 1;
     end = end + 7;
-    if (end > numDays) end = numDays;
+    if (end > new Date(year, month + 1, 0).getDate()) {
+      end = new Date(year, month + 1, 0).getDate();
+    }
     weekNumber++;
   }
 
-  // Criar documento MongoDB
-  const newMonthlyBudget = new MonthlyBudget({
-    userId,
+  const newBudget = {
     totalBudget,
-    remainingBudget: totalBudget, // Novo campo
+    remainingBudget: totalBudget,
+    currentVigency,
     weeks,
-  });
+  };
 
   try {
-    await newMonthlyBudget.save();
-    res.status(201).send(newMonthlyBudget);
+    let userBudget = await UserBudget.findOne({ userId });
+
+    if (!userBudget) {
+      userBudget = new UserBudget({ userId, budget: [newBudget] });
+    } else {
+      // Verificar se já existe um orçamento para a vigência atual
+      const existingBudget = userBudget.budget.find(
+        (b) => b.currentVigency === currentVigency
+      );
+      if (existingBudget) {
+        return res
+          .status(400)
+          .send("Um orçamento para essa vigência já existe.");
+      } else {
+        userBudget.budget.push(newBudget);
+      }
+    }
+
+    await userBudget.save();
+    res.status(201).send({ return: "Orçamento criado com sucesso!" });
   } catch (error) {
     console.error("Erro ao criar o orçamento mensal:", error);
     res.status(500).send("Erro interno do servidor");
