@@ -2,52 +2,55 @@ import { Request, Response } from "express";
 import MonthlyBudget from "../../models/MonthlyBudget";
 
 export async function UpdateWeeklyBudget(req: Request, res: Response) {
-  const { userId, newBudget } = req.body;
+  const { userId, totalBudget, currentVigency } = req.body;
 
-  // Validar os campos
-  if (!userId || !newBudget) {
-    return res.status(400).send("UserId e newBudget são campos obrigatórios.");
-  }
-
-  if (isNaN(newBudget)) {
-    return res.status(400).send("newBudget deve ser um número.");
+  if (isNaN(totalBudget)) {
+    return res
+      .status(400)
+      .send("O valor do orçamento total deve ser um número.");
   }
 
   try {
-    const userBudget = await MonthlyBudget.findOne({ userId });
-
+    let userBudget = await MonthlyBudget.findOne({ userId });
     if (!userBudget) {
       return res
         .status(404)
         .send("Orçamento não encontrado para o usuário especificado.");
     }
 
+    const budgetToUpdate: any = userBudget.budget.find(
+      (budget) => budget.currentVigency === currentVigency
+    );
+
+    if (!budgetToUpdate) {
+      return res
+        .status(404)
+        .send("Orçamento para a vigência atual não encontrado.");
+    }
+
     // Atualizar o totalBudget
-    userBudget.totalBudget = newBudget;
+    budgetToUpdate.totalBudget = totalBudget;
 
-    // Reajustar o remainingBudget global com base no novo totalBudget
-    userBudget.remainingBudget = newBudget;
+    // Recalcular o budget para cada semana
+    const numberOfWeeks = budgetToUpdate.weeks.length;
+    const newWeeklyBudget = totalBudget / numberOfWeeks;
 
-    // Reajustar o remainingBudget para cada semana
-    userBudget.weeks.forEach((week: any, index: number) => {
-      if (index === 0) {
-        week.remainingBudget = newBudget;
-      } else {
-        week.remainingBudget = userBudget.weeks[index - 1].remainingBudget;
-      }
+    let newRemainingBudget = totalBudget;
 
-      // Subtrair as despesas da semana do remainingBudget
+    budgetToUpdate.weeks.forEach((week: any) => {
       const totalExpenses = week.expenses.reduce(
-        (acc: number, expense: any) => acc + expense.value,
+        (total: any, expense: any) => total + expense.value,
         0
       );
-      week.remainingBudget -= totalExpenses;
+      week.weekBudget = newWeeklyBudget;
+      week.weekRemainingBudget = newWeeklyBudget - totalExpenses;
+      newRemainingBudget -= totalExpenses;
     });
 
-    // Salvar as alterações
-    await userBudget.save();
+    budgetToUpdate.remainingBudget = newRemainingBudget;
 
-    res.status(200).send(userBudget);
+    await userBudget.save();
+    return res.status(200).send("Budget atualizado com sucesso!");
   } catch (error) {
     console.error("Erro ao atualizar o orçamento:", error);
     res.status(500).send("Erro interno do servidor");

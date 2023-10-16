@@ -27,6 +27,10 @@ export async function GetExpenses(req: Request, res: Response) {
         FormatDateBrazilian(String(endDate))
       );
 
+      console.log("startDateFormatted", startDateFormatted);
+      console.log("endDateFormatted", endDateFormatted);
+
+      console.log("startDate", startDate);
       // Adicione o critério de pesquisa por intervalo de datas
       matchQuery["$and"] = [
         {

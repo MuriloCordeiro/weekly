@@ -1,6 +1,6 @@
 import { Router } from "express";
 
-import { GetBudget } from "./controllers/GET/getUserBudget";
+import { GetWeeklyBudget } from "./controllers/GET/getWeeklyBudget";
 import { AddWeeklyExpenses } from "./controllers/POST/addWeeklyExpenses";
 import { AddExpenses } from "./controllers/POST/addExpenses";
 import { CreateUserBudget } from "./controllers/POST/createUserBudget";
@@ -15,7 +15,7 @@ import { GetUserBudgetExpenses } from "./controllers/GET/getUserBudgetExpenses";
 
 const router = Router();
 //GET
-router.get("/getBudget", GetBudget);
+router.get("/getWeeklyBudget", GetWeeklyBudget);
 router.get("/getExpenses", GetExpenses);
 router.get("/getBudgetExpense", GetUserBudgetExpenses);
 
@@ -30,6 +30,6 @@ router.post("/updateWeeklyBudget", UpdateWeeklyBudget);
 router.post("/updateWeeklyExpense", UpdateWeeklyExpense);
 //DELETE
 router.delete("/deleteExpense", DeleteExpense);
-router.delete("/deleteWeeklyExpense", DeleteWeeklyExpense);
+router.post("/deleteWeeklyExpense", DeleteWeeklyExpense);
 
 export default router;
