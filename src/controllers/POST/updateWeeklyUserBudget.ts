@@ -31,20 +31,21 @@ export async function UpdateWeeklyBudget(req: Request, res: Response) {
     // Atualizar o totalBudget
     budgetToUpdate.totalBudget = totalBudget;
 
-    // Recalcular o budget para cada semana
     const numberOfWeeks = budgetToUpdate.weeks.length;
     const newWeeklyBudget = totalBudget / numberOfWeeks;
 
     let newRemainingBudget = totalBudget;
 
     budgetToUpdate.weeks.forEach((week: any) => {
+      week.weekBudget = newWeeklyBudget;
+
       const totalExpenses = week.expenses.reduce(
         (total: any, expense: any) => total + expense.value,
         0
       );
-      week.weekBudget = newWeeklyBudget;
+
       week.weekRemainingBudget = newWeeklyBudget - totalExpenses;
-      newRemainingBudget -= totalExpenses;
+      newRemainingBudget -= totalExpenses; // Somente subtrair as despesas para o cálculo global.
     });
 
     budgetToUpdate.remainingBudget = newRemainingBudget;
