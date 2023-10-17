@@ -54,10 +54,24 @@ export async function AddWeeklyExpenses(req: Request, res: Response) {
 
     // Adicionando despesa
     week.expenses.push({ title, description, value, expenseDate });
+
+    budget.remainingBudget -= value;
+
+    // Atualizando orçamento remanescente da semana atual
     week.weekRemainingBudget -= value;
 
-    // Atualizando orçamento remanescente no budget geral
-    budget.remainingBudget -= value;
+    // Atualizando orçamento remanescente das semanas subsequentes
+    for (let i = week.weekNumber; i < budget.weeks.length; i++) {
+      let currentWeek = budget.weeks[i];
+      currentWeek.weekRemainingBudget -= value;
+
+      // Caso você ainda queira descontar despesas da semana, pode descomentar e ajustar este loop
+      // for (let expense of currentWeek.expenses) {
+      //   currentWeek.weekRemainingBudget -= expense.value;
+      // }
+    }
+
+    // // Atualizando orçamento remanescente no budget geral
 
     await userBudget.save();
 

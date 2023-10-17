@@ -3,10 +3,8 @@ import UserBudget from "../../models/MonthlyBudget";
 
 export async function DeleteWeeklyExpense(req: Request, res: Response) {
   const { userId, weekNumber, currentVigency, expenseId } = req.body;
-  console.log("weekNumber", weekNumber);
 
   try {
-    // Localize o UserBudget pelo userId
     let userBudget = await UserBudget.findOne({ userId });
     if (!userBudget) {
       return res
@@ -14,7 +12,6 @@ export async function DeleteWeeklyExpense(req: Request, res: Response) {
         .send("Orçamento não encontrado para o usuário especificado.");
     }
 
-    // Localize o budget correto pela vigência atual
     let budget = userBudget.budget.find(
       (b) => b.currentVigency === currentVigency
     );
@@ -24,13 +21,11 @@ export async function DeleteWeeklyExpense(req: Request, res: Response) {
         .send("Orçamento para a vigência atual não encontrado.");
     }
 
-    // Localize a semana pelo weekNumber
     let week: any = budget.weeks.find((w: any) => w.weekNumber === weekNumber);
     if (!week) {
       return res.status(404).send("Semana não encontrada.");
     }
 
-    // Localize e remova a despesa pelo expenseId
     const expenseIndex = week.expenses.findIndex(
       (e: any) => e._id.toString() === expenseId
     );
@@ -38,11 +33,32 @@ export async function DeleteWeeklyExpense(req: Request, res: Response) {
       return res.status(404).send("Despesa não encontrada.");
     }
 
-    const expense = week.expenses.splice(expenseIndex, 1)[0]; // Remove e retorna a despesa
-    week.weekRemainingBudget += expense.value; // Atualize o remainingBudget da semana
-    budget.remainingBudget += expense.value; // Atualize o remainingBudget total
+    const expense = week.expenses.splice(expenseIndex, 1)[0];
 
-    await userBudget.save(); // Salve as alterações no banco de dados
+    budget.remainingBudget += expense.value;
+
+    week.weekRemainingBudget += expense.value;
+
+    // Atualizando orçamento remanescente das semanas subsequentes
+    // for (let i = week.weekNumber; i < budget.weeks.length; i++) {
+    //   if (i === week.weekNumber) {
+    //     budget.weeks[i].weekRemainingBudget += expense.value;
+    //   } else {
+    //     budget.weeks[i].weekRemainingBudget += week.weekBudget; // Adicionando o orçamento da semana anterior de volta
+    //   }
+    // }
+
+    for (let i = week.weekNumber; i < budget.weeks.length; i++) {
+      let currentWeek = budget.weeks[i];
+      currentWeek.weekRemainingBudget += expense.value;
+
+      // Caso você ainda queira descontar despesas da semana, pode descomentar e ajustar este loop
+      // for (let expense of currentWeek.expenses) {
+      //   currentWeek.weekRemainingBudget -= expense.value;
+      // }
+    }
+
+    await userBudget.save();
 
     res
       .status(200)
