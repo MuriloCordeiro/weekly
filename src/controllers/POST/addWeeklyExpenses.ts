@@ -37,11 +37,9 @@ export async function AddWeeklyExpenses(req: Request, res: Response) {
     );
 
     if (!budget) {
-      return res
-        .status(404)
-        .send({
-          res: "Orçamento para a vigência especificada não encontrado.",
-        });
+      return res.status(404).send({
+        res: "Orçamento para a vigência especificada não encontrado.",
+      });
     }
 
     let week: any = budget.weeks.find((w: any) => w.weekNumber === weekNumber);
@@ -51,7 +49,7 @@ export async function AddWeeklyExpenses(req: Request, res: Response) {
     }
 
     if (week.weekRemainingBudget < value) {
-      return res.status(400).send({ res: "Orçamento da semana insuficiente." });
+      return res.status(404).send({ res: "Orçamento da semana insuficiente." });
     }
 
     // Adicionando despesa
